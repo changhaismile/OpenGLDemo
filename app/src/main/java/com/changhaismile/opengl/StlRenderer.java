@@ -6,6 +6,7 @@ import android.opengl.GLU;
 
 import com.changhaismile.opengl.model.Model;
 import com.changhaismile.opengl.model.Point;
+import com.changhaismile.opengl.utils.Utils;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -53,6 +54,11 @@ public class StlRenderer implements GLSurfaceView.Renderer {
         gl.glDepthFunc(GL10.GL_LEQUAL);
         //设置阴影模式GL_SMOOTH
         gl.glShadeModel(GL10.GL_SMOOTH);
+
+        //开启光照
+        openLight(gl);
+        enableMaterial(gl);
+
         float r = model.getR();
         //r是半径，不是直径，因此用0.5/r可以酸楚放缩比例
         mScalef = 0.5f / r;
@@ -115,5 +121,32 @@ public class StlRenderer implements GLSurfaceView.Renderer {
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
         //取消法向量设置
         gl.glDisableClientState(GL10.GL_NORMAL_ARRAY);
+    }
+
+    float[] ambient = {0.9f, 0.9f, 0.9f, 1.0f};
+    float[] diffuse = {0.5f, 0.5f, 0.5f, 1.0f};
+    float[] specular = {1.0f, 1.0f, 1.0f, 1.0f};
+    float[] lightPosition = {0.5f, 0.5f, 0.5f, 0.0f};
+
+    public void openLight(GL10 gl) {
+        gl.glEnable(GL10.GL_LIGHTING);
+        gl.glEnable(GL10.GL_LIGHT0);
+        gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, Utils.getFloatBuff(ambient));
+        gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, Utils.getFloatBuff(diffuse));
+        gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPECULAR, Utils.getFloatBuff(specular));
+        gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, Utils.getFloatBuff(lightPosition));
+    }
+
+    float[] materialAmb = {0.4f, 0.4f, 1.0f, 1.0f,};
+    float[] materialDiff = {0.0f, 0.0f, 1.0f, 1.0f,};
+    float[] materialSpec = {1.0f, 0.5f, 0.0f, 1.0f,};
+
+    public void enableMaterial(GL10 gl) {
+        //材料对环境光的反射情况
+        gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, Utils.getFloatBuff(materialAmb));
+        //散射光的反射情况
+        gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, Utils.getFloatBuff(materialDiff));
+        //镜面光的反射情况
+        gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, Utils.getFloatBuff(materialSpec));
     }
 }

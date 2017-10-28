@@ -11,6 +11,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mDotGLSurfaceView;
     private TextView mLineAreaSurfaceView;
     private TextView mStlSurfaceView;
+    private TextView mPoxyStlSurfaceView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,10 +20,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDotGLSurfaceView = (TextView) findViewById(R.id.tv_dot_gl_surfaceview);
         mLineAreaSurfaceView = (TextView) findViewById(R.id.tv_line_area_gl_surfaceview);
         mStlSurfaceView = (TextView) findViewById(R.id.tv_stl_gl_surfaceview);
+        mPoxyStlSurfaceView = (TextView) findViewById(R.id.tv_poxy_stl_gl_surfaceview);
         mGLSurfaceView.setOnClickListener(this);
         mDotGLSurfaceView.setOnClickListener(this);
         mLineAreaSurfaceView.setOnClickListener(this);
         mStlSurfaceView.setOnClickListener(this);
+        mPoxyStlSurfaceView.setOnClickListener(this);
     }
 
     @Override
@@ -39,6 +42,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.tv_stl_gl_surfaceview:
                 startActivity(new Intent(this, STLOpenGlSurfaceViewActivity.class));
+                break;
+            case R.id.tv_poxy_stl_gl_surfaceview:
+                startActivity(new Intent(this, PoxyStlSurfaceViewActivity.class));
                 break;
         }
     }

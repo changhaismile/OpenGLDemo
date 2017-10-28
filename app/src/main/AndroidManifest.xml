@@ -24,6 +24,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".STLOpenGlSurfaceViewActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".PoxyStlSurfaceViewActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

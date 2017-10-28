@@ -1,6 +1,7 @@
 package com.changhaismile.opengl;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 
 import com.changhaismile.opengl.model.Model;
 import com.changhaismile.opengl.utils.Utils;
@@ -26,6 +27,25 @@ public class STLReader {
     public Model parserBinStlInAssets(Context context, String fileName) throws IOException {
         InputStream is = context.getAssets().open(fileName);
         return parserBinStl(is);
+    }
+
+    public Model parserStlWithTextureInAssets(Context context, String name) throws IOException {
+        AssetManager am = context.getAssets();
+        InputStream stlInput = am.open(name + ".stl");
+        InputStream textureInput = am.open(name + ".pxy");
+        Model model = parseStlWithTexture(stlInput, textureInput);
+        model.setPictureName(name + ".jpg");
+        return model;
+    }
+
+    public Model parseStlWithTexture(InputStream stlInput, InputStream textureInput) throws IOException {
+        Model model = parserBinStl(stlInput);
+        int facetCount = model.getFacetCount();
+        // 三角面片有3个顶点，一个顶点有2个坐标轴数据，每个坐标轴数据是float类型（4字节）
+        byte[] textureBytes = new byte[facetCount * 3 * 2 * 4];
+        textureInput.read(textureBytes);// 将所有纹理坐标读出来
+        parseTexture(model, textureBytes);
+        return model;
     }
 
     public Model parserBinStl(InputStream in) throws IOException {
@@ -143,6 +163,26 @@ public class STLReader {
         model.setVnorms(vnorms);
         model.setRemarks(remarks);
 
+    }
+
+    private void parseTexture(Model model, byte[] textureBytes) {
+        int facetCount = model.getFacetCount();
+        // 三角面个数有三个顶点，一个顶点对应纹理二维坐标
+        float[] textures = new float[facetCount * 3 * 2];
+        int textureOffset = 0;
+        for (int i = 0; i < facetCount * 3; i++) {
+            //第i个顶点对应的纹理坐标
+            //tx和ty的取值范围为[0,1],表示的坐标位置是在纹理图片上的对应比例
+            float tx = Utils.byte4ToFloat(textureBytes, textureOffset);
+            float ty = Utils.byte4ToFloat(textureBytes, textureOffset + 4);
+
+            textures[i * 2] = tx;
+            //我们的pxy文件原点是在左下角，因此需要用1减去y坐标值
+            textures[i * 2 + 1] = 1 - ty;
+
+            textureOffset += 8;
+        }
+        model.setTextures(textures);
     }
 
     public static interface StlLoadListener {
